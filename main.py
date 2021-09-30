@@ -24,36 +24,30 @@ from azure.identity import DefaultAzureCredential
 # replace the sas url, and token with your own
 class AzureValidator:
 
-    def __init__(self, url, shared_access_key):
+    def __init__(self, storageAccountUrl, sharedAccessKey, kvUrl, secretPassword):
 
         # BEST TO EXPORT TO PATH os.environ["KEY_VAULT_NAME"]
-        keyVaultName = "pytestKeyVault"
-        KVUri = f"https://{keyVaultName}.vault.azure.net"
+
+        self._connectToClients(storageAccountUrl, sharedAccessKey, kvUrl)
+        if(not self.blobServiceClient or not self.keyVaultClient):
+            return
+
+        print(self.keyVaultClient.get_secret(secretPassword).value)
+
+    def _connectToClients(self, storageAccountUrl, sharedAccessKey, kvUrl):
+        print("")
 
         try:
-            client = SecretClient(
-                vault_url=KVUri, credential=DefaultAzureCredential()).get_secret("secretPassword")
-        except Exception as ex:
-            print(ex)
-
-        try:
-
-            print("Azure Blob Storage v" + __version__ +
-                  " - Python quickstart sample")
+            self.keyVaultClient = SecretClient(
+                vault_url=kvUrl, credential=DefaultAzureCredential())
             self.blobServiceClient = BlobServiceClient(
-                url, credential=shared_access_key)
-
-            container_client = self.blobServiceClient.list_containers()
-            for blob in container_client:
-                print(blob.name)
-
-                # Quick start code goes here
-
+                storageAccountUrl, credential=sharedAccessKey)
+            print("----------\n Successfully Signed in \n----------")
         except Exception as ex:
-            print('Exceptihon:')
             print(ex)
+            self.keyVaultClient = None
+            self.blobServiceClient = None
 
-    
     def _checkBlobName(self) -> bool:
         container_client = self.blobServiceClient.list_containers()
         for blob in container_client:
@@ -69,7 +63,11 @@ def test_answer():
 
 
 azureValidator = AzureValidator(
-    "https://storage12345storage12345.blob.core.windows.net/", "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2021-10-01T04:24:45Z&st=2021-09-30T20:24:45Z&spr=https,http&sig=xI%2BvVK9n%2BsyCmCho3sAfnxiWhL2XR72p8ACq7tdvpYc%3D")
+    "https://storage12345storage12345.blob.core.windows.net/",
+    "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2021-10-01T04:24:45Z&st=2021-09-30T20:24:45Z&spr=https,http&sig=xI%2BvVK9n%2BsyCmCho3sAfnxiWhL2XR72p8ACq7tdvpYc%3D",
+    f"https://pytestkeyvault.vault.azure.net",
+    "secretPassword"
+)
 
 # test_answer()
 
