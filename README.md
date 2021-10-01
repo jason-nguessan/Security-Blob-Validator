@@ -27,11 +27,11 @@ I created a count, and referenced an existing secret to mimick a potential secur
 
 In real life, the containers would have already existed. From then on we would use python to iterate through all the containers. 
 
-The next step here would be to use main.py to read the blob file's content. 
+The next step here would be to use main.py to read the blob file's content, and link the results to [Azure Test plans](https://azure.microsoft.com/en-us/services/devops/test-plans/). 
 
 
-I suspect the algorithm would take O(n2) , or optimally O(n log n).
-
+I suspect the Computation would take O(n2), or optimally O(n log n).
 
 ![Alt Text](./.attachments/time_complexity.png)
+
 
