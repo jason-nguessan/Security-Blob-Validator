@@ -37,7 +37,7 @@ class AzureSecretValidator:
         for blob in self.blobServiceClient.list_containers():
             if(self.secret in blob.name):
                 print(
-                    "----------\n Breach!!!! Secret was Found in Container's Name \n----------")
+                    "----------\n Potential Security Breach!!!! Secret was Found in Container's Name \n----------")
                 return True
         return False
 
@@ -80,5 +80,3 @@ azureValidator = AzureSecretValidator(
 
 
 assert(azureValidator.isSecretInBlobName() == False)
-
-
